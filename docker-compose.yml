@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # MongoDB服务
+  mongodb:
+    image: mongo:latest
+    container_name: bazi-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - bazi_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/bazi --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Next.js应用
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bazi-app
+    restart: always
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/bazi
+      - NEXT_PUBLIC_BASE_URL=https://bazi.1895.cn
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - bazi_network
+
+networks:
+  bazi_network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local 

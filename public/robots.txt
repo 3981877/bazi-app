@@ -1,0 +1,12 @@
+# 允许所有搜索引擎爬取网站
+User-agent: *
+Allow: /
+
+# 禁止爬取管理后台
+Disallow: /admin/
+
+# 禁止爬取API接口
+Disallow: /api/
+
+# 网站地图
+Sitemap: https://bazi.1895.cn/sitemap.xml 
