@@ -115,20 +115,20 @@ export default function Dashboard() {
   };
 
   const StatCard = ({ title, value, icon, linkTo, loading }: { title: string; value: number; icon: string; linkTo?: string; loading?: boolean }) => (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-medium text-gray-700">{title}</h3>
-        <span className="text-purple-500 text-2xl">{icon}</span>
+    <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-base sm:text-lg font-medium text-gray-700">{title}</h3>
+        <span className="text-purple-500 text-xl sm:text-2xl">{icon}</span>
       </div>
       {loading ? (
-        <div className="flex items-center justify-center h-10">
+        <div className="flex items-center justify-center h-8 sm:h-10">
           <Spin size="small" />
         </div>
       ) : (
-        <p className="text-3xl font-bold text-gray-900">{value.toLocaleString()}</p>
+        <p className="text-2xl sm:text-3xl font-bold text-gray-900">{value.toLocaleString()}</p>
       )}
       {linkTo && (
-        <Link href={linkTo} className="mt-4 inline-block text-sm text-purple-600 hover:text-purple-800">
+        <Link href={linkTo} className="mt-3 sm:mt-4 inline-block text-sm text-purple-600 hover:text-purple-800">
           查看详情 &rarr;
         </Link>
       )}
@@ -137,14 +137,15 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">系统仪表盘</h1>
-        <div className="flex items-center">
-          <span className="mr-2">时间范围:</span>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">系统仪表盘</h1>
+        <div className="flex flex-wrap items-center">
+          <span className="mr-2 text-sm sm:text-base">时间范围:</span>
           <Select 
             value={timeRange} 
             onChange={setTimeRange}
             style={{ width: 120 }}
+            size="middle"
             options={[
               { value: 7, label: '最近7天' },
               { value: 14, label: '最近14天' },
@@ -157,7 +158,7 @@ export default function Dashboard() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <StatCard 
           title="总访问量" 
           value={stats.totalVisits} 
@@ -199,24 +200,24 @@ export default function Dashboard() {
         />
       </div>
       
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">系统状态</h2>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-700">服务器状态</span>
-            <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">{systemStatus.server}</span>
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">系统状态</h2>
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex flex-wrap items-center justify-between">
+            <span className="text-sm sm:text-base text-gray-700">服务器状态</span>
+            <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm">{systemStatus.server}</span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-700">系统版本</span>
-            <span className="text-gray-900">{systemStatus.version}</span>
+          <div className="flex flex-wrap items-center justify-between">
+            <span className="text-sm sm:text-base text-gray-700">系统版本</span>
+            <span className="text-sm sm:text-base text-gray-900">{systemStatus.version}</span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-700">上次更新</span>
-            <span className="text-gray-900">{systemStatus.updateDate}</span>
+          <div className="flex flex-wrap items-center justify-between">
+            <span className="text-sm sm:text-base text-gray-700">上次更新</span>
+            <span className="text-sm sm:text-base text-gray-900">{systemStatus.updateDate}</span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-700">数据库状态</span>
-            <span className={`px-2 py-1 ${systemStatus.database === '已连接' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded-full text-sm`}>
+          <div className="flex flex-wrap items-center justify-between">
+            <span className="text-sm sm:text-base text-gray-700">数据库状态</span>
+            <span className={`px-2 py-1 ${systemStatus.database === '已连接' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded-full text-xs sm:text-sm`}>
               {systemStatus.database}
             </span>
           </div>

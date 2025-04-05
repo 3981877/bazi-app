@@ -129,14 +129,15 @@ export default function IPStatistics() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">IP访问统计</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">IP访问统计</h1>
         <div className="flex items-center">
-          <span className="mr-2">时间范围:</span>
+          <span className="mr-2 text-sm sm:text-base">时间范围:</span>
           <Select 
             value={timeRange} 
             onChange={setTimeRange}
             style={{ width: 120 }}
+            size="middle"
             options={[
               { value: 7, label: '最近7天' },
               { value: 14, label: '最近14天' },
@@ -149,11 +150,11 @@ export default function IPStatistics() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* IP来源地区统计 */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">来源地区统计</h2>
-          <div className="h-80 overflow-hidden">
+        <div className="lg:col-span-2 bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">来源地区统计</h2>
+          <div className="h-64 sm:h-80 overflow-hidden">
             {loading ? (
               <div className="flex items-center justify-center h-full">
                 <Spin tip="加载中..." />
@@ -163,20 +164,20 @@ export default function IPStatistics() {
                 <p className="text-gray-500">暂无数据</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4 overflow-y-auto pr-2 h-full">
                 {Object.entries(locationStats || {})
                   .sort((a, b) => b[1] - a[1])
                   .map(([location, count]) => (
                     <div key={location} className="relative">
                       <div className="flex justify-between mb-1">
-                        <span className="text-gray-700">{location}</span>
-                        <span className="text-gray-900 font-medium">
+                        <span className="text-sm sm:text-base text-gray-700">{location}</span>
+                        <span className="text-sm sm:text-base text-gray-900 font-medium">
                           {count} ({totalVisits > 0 ? ((count / totalVisits) * 100).toFixed(1) : '0'}%)
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
-                          className="bg-purple-600 h-2.5 rounded-full"
+                          className="bg-purple-600 h-2 rounded-full"
                           style={{
                             width: `${Object.values(locationStats || {}).length > 0 
                               ? (count / Math.max(...Object.values(locationStats || {}))) * 100 
@@ -192,33 +193,33 @@ export default function IPStatistics() {
         </div>
 
         {/* 访问统计概要 */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">访问概要</h2>
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">访问概要</h2>
           {loading ? (
-            <div className="flex items-center justify-center h-64">
+            <div className="flex items-center justify-center h-48 sm:h-64">
               <Spin tip="加载中..." />
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
-                <h3 className="text-gray-600 mb-2">总IP数</h3>
-                <p className="text-3xl font-bold text-gray-900">{totalIPs.toLocaleString()}</p>
+                <h3 className="text-sm sm:text-base text-gray-600 mb-1 sm:mb-2">总IP数</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{totalIPs.toLocaleString()}</p>
               </div>
               <div>
-                <h3 className="text-gray-600 mb-2">总访问量</h3>
-                <p className="text-3xl font-bold text-gray-900">
+                <h3 className="text-sm sm:text-base text-gray-600 mb-1 sm:mb-2">总访问量</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {totalVisits.toLocaleString()}
                 </p>
               </div>
               <div>
-                <h3 className="text-gray-600 mb-2">平均每IP访问次数</h3>
-                <p className="text-3xl font-bold text-gray-900">
+                <h3 className="text-sm sm:text-base text-gray-600 mb-1 sm:mb-2">平均每IP访问次数</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                   {totalIPs ? (totalVisits / totalIPs).toFixed(2) : '0'}
                 </p>
               </div>
               <div>
-                <h3 className="text-gray-600 mb-2">地区覆盖</h3>
-                <p className="text-3xl font-bold text-gray-900">{Object.keys(locationStats).length}</p>
+                <h3 className="text-sm sm:text-base text-gray-600 mb-1 sm:mb-2">地区覆盖</h3>
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">{Object.keys(locationStats).length}</p>
               </div>
             </div>
           )}
@@ -227,14 +228,14 @@ export default function IPStatistics() {
 
       {/* IP详细列表 */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="p-4 border-b">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-800">IP详细列表</h2>
-            <div className="relative">
+        <div className="p-3 sm:p-4 border-b">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">IP详细列表</h2>
+            <div className="w-full sm:w-auto sm:relative">
               <input
                 type="text"
-                placeholder="搜索 IP、地区、浏览器或操作系统..."
-                className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="搜索 IP、地区..."
+                className="w-full sm:w-auto px-3 sm:px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -246,95 +247,106 @@ export default function IPStatistics() {
             <thead className="bg-gray-50">
               <tr>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                   onClick={() => requestSort('ip')}
                 >
-                  IP地址 {getSortIndicator('ip')}
+                  <span className="flex items-center">
+                    IP {getSortIndicator('ip')}
+                  </span>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
                   onClick={() => requestSort('location')}
                 >
-                  地区 {getSortIndicator('location')}
+                  <span className="flex items-center">
+                    地区 {getSortIndicator('location')}
+                  </span>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden sm:table-cell"
                   onClick={() => requestSort('visits')}
                 >
-                  访问次数 {getSortIndicator('visits')}
+                  <span className="flex items-center">
+                    访问次数 {getSortIndicator('visits')}
+                  </span>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden md:table-cell"
                   onClick={() => requestSort('lastVisit')}
                 >
-                  最后访问 {getSortIndicator('lastVisit')}
+                  <span className="flex items-center">
+                    最后访问 {getSortIndicator('lastVisit')}
+                  </span>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden lg:table-cell"
                   onClick={() => requestSort('device')}
                 >
-                  设备类型 {getSortIndicator('device')}
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  浏览器/操作系统
+                  <span className="flex items-center">
+                    设备 {getSortIndicator('device')}
+                  </span>
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 whitespace-nowrap text-center">
+                  <td colSpan={5} className="px-6 py-4">
                     <div className="flex justify-center">
-                      <Spin tip="加载中..." />
+                      <Spin />
                     </div>
-                  </td>
-                </tr>
-              ) : ipData.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-4 whitespace-nowrap text-center text-gray-500">
-                    暂无数据
                   </td>
                 </tr>
               ) : filteredAndSortedData().length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 whitespace-nowrap text-center text-gray-500">
-                    没有找到匹配的记录
+                  <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                    没有找到匹配的数据
                   </td>
                 </tr>
               ) : (
-                filteredAndSortedData().map((item) => (
-                  <tr key={item.ip} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item.ip}</div>
+                filteredAndSortedData().map((item, index) => (
+                  <tr key={index}>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                      {item.ip}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item.location || '未知'}</div>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
+                      {item.location || '未知'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.visits}</div>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden sm:table-cell">
+                      {item.visits}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{item.lastVisit}</div>
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden md:table-cell">
+                      {item.lastVisit}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        item.device === '移动' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {item.device || '未知'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {item.browser && item.os 
-                        ? `${item.browser} / ${item.os}` 
-                        : item.browser || item.os || '未知'}
+                    <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500 hidden lg:table-cell">
+                      {item.device || '未知'} {item.browser ? `/ ${item.browser}` : ''} {item.os ? `/ ${item.os}` : ''}
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
+        </div>
+        
+        {/* 移动端访问次数和最后访问时间列表 - 在小屏幕上显示 */}
+        <div className="sm:hidden">
+          {!loading && filteredAndSortedData().length > 0 && (
+            <div className="p-4 border-t border-gray-200">
+              <h3 className="text-sm font-medium text-gray-700 mb-2">详细信息</h3>
+              {filteredAndSortedData().map((item, index) => (
+                <div key={`mobile-detail-${index}`} className="mb-3 pb-3 border-b border-gray-100 last:border-0">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-medium">访问次数:</span>
+                    <span className="text-xs">{item.visits}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-medium">最后访问:</span>
+                    <span className="text-xs">{item.lastVisit}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
