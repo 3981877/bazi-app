@@ -29,6 +29,7 @@ fi
 REBUILD=false
 UPDATE_CODE=true
 SHOW_LOGS=false
+CLEAN_ALL=false
 
 for arg in "$@"
 do
@@ -45,11 +46,12 @@ do
     SHOW_LOGS=true
     shift
     ;;
+    --clean-all)
+    CLEAN_ALL=true
+    shift
+    ;;
   esac
 done
-
-# 创建备份目录
-mkdir -p backups
 
 # 检查是否存在.env.production文件
 if [ ! -f ".env.production" ]; then
@@ -84,8 +86,37 @@ set -a
 source .env.production
 set +a
 
+# 如果指定了完全清理，则移除所有相关容器、镜像和卷
+if [ "$CLEAN_ALL" = true ]; then
+  echo -e "${YELLOW}正在完全清理Docker环境...${NC}"
+  
+  # 停止并移除所有容器
+  docker compose -f docker-compose.prod.yml down
+  
+  # 删除所有bazi相关的容器
+  CONTAINERS=$(docker ps -a | grep bazi | awk '{print $1}')
+  if [ ! -z "$CONTAINERS" ]; then
+    echo -e "${YELLOW}移除所有bazi相关容器...${NC}"
+    docker rm -f $CONTAINERS
+  fi
+  
+  # 删除所有bazi相关的镜像
+  IMAGES=$(docker images | grep bazi | awk '{print $3}')
+  if [ ! -z "$IMAGES" ]; then
+    echo -e "${YELLOW}移除所有bazi相关镜像...${NC}"
+    docker rmi -f $IMAGES
+  fi
+  
+  # 删除所有bazi相关的卷
+  VOLUMES=$(docker volume ls | grep bazi | awk '{print $2}')
+  if [ ! -z "$VOLUMES" ]; then
+    echo -e "${YELLOW}移除所有bazi相关数据卷...${NC}"
+    docker volume rm $VOLUMES
+  fi
+  
+  echo -e "${GREEN}完全清理完成.${NC}"
 # 如果指定了重新构建，则先停止并移除旧容器
-if [ "$REBUILD" = true ]; then
+elif [ "$REBUILD" = true ]; then
   echo -e "${YELLOW}正在停止并移除旧容器...${NC}"
   docker compose -f docker-compose.prod.yml down
   echo -e "${YELLOW}清理未使用的Docker资源...${NC}"
@@ -94,7 +125,7 @@ fi
 
 # 构建并启动容器
 echo -e "${GREEN}构建并启动容器...${NC}"
-if [ "$REBUILD" = true ]; then
+if [ "$REBUILD" = true ] || [ "$CLEAN_ALL" = true ]; then
   docker compose -f docker-compose.prod.yml up -d --build --force-recreate
 else
   docker compose -f docker-compose.prod.yml up -d --build
@@ -132,10 +163,10 @@ if [ $? -eq 0 ]; then
   echo -e "${YELLOW}重要提示:${NC}"
   echo -e "1. 您应该设置Nginx或其他反向代理以启用HTTPS"
   echo -e "2. MongoDB凭据已保存在.env.production文件中"
-  echo -e "3. 数据库备份将自动保存在 ./backups 目录"
-  echo -e "4. 可使用以下命令管理服务:"
+  echo -e "3. 可使用以下命令管理服务:"
   echo -e "   - 查看日志: ./deploy-prod.sh --logs"
   echo -e "   - 重建容器: ./deploy-prod.sh --rebuild"
+  echo -e "   - 完全清理: ./deploy-prod.sh --clean-all"
   echo -e "   - 不更新代码部署: ./deploy-prod.sh --no-update"
   
   # 如果指定了显示日志，则显示日志

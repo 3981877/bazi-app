@@ -54,35 +54,6 @@ services:
         max-size: "100m"
         max-file: "3"
 
-  backup:
-    image: mongo:latest
-    restart: always
-    volumes:
-      - mongodb_data:/data/db:ro
-      - ./backups:/backups
-    networks:
-      - bazi_network
-    depends_on:
-      mongodb:
-        condition: service_healthy
-    entrypoint: |
-      bash -c 'echo "创建备份目录"; mkdir -p /backups;
-      echo "每天凌晨3点自动备份数据库";
-      while true; do
-        current_date=`date +%Y%m%d-%H%M`;
-        echo "[$current_date] 备份数据库...";
-        mongodump --host mongodb --port 27017 -u bazi_user -p ${MONGO_PASSWORD} --authenticationDatabase admin --db bazi --out /backups/backup-$current_date;
-        echo "备份完成，保留最近10个备份";
-        ls -tp /backups | grep -v / | tail -n +11 | xargs -I {} rm -- /backups/{};
-        echo "下次备份将在24小时后执行";
-        sleep 86400;
-      done'
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "2"
-
 networks:
   bazi_network:
     driver: bridge
