@@ -6,52 +6,94 @@
 
 // 更高级的用户代理解析函数
 const parseUserAgent = (userAgent: string) => {
+  if (!userAgent) {
+    return { device: '未知', browser: '未知', os: '未知' };
+  }
+  
   const ua = userAgent.toLowerCase();
   
-  // 检测设备类型
+  // 检测设备类型 - 使用更准确的检测逻辑
   let device = '未知';
-  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-    device = '移动'; // 平板归类为移动设备
-  } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+  
+  // 针对微信等中国常见App的特殊处理
+  if (/(micromessenger|weibo|qq|qzone|tieba|alipay)/i.test(ua)) {
     device = '移动';
-  } else {
+  }
+  // 针对平板设备 - 注意某些平板在user agent中可能同时包含mobile和tablet字样
+  else if (/(ipad|tablet|playbook|silk)|(android(?!.*mobile))/i.test(ua)) {
+    device = '移动';
+  }
+  // 针对手机设备 - 包含更多移动设备标识
+  else if (/(mobile|phone|android|iphone|ipod|ios|blackberry|iemobile|opera mini|opera mobi|webos|symbian|windows phone|kindle|silk|maemo|midp|cldc|up.browser|up.link|blazer|vodafone|huawei|xiaomi|oppo|vivo|miui|harmonyos)/i.test(ua)) {
+    device = '移动';
+  }
+  // 检查屏幕尺寸 - 这里只能在客户端执行时检测
+  else if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+    device = '移动';
+  }
+  // 其他情况默认为桌面设备
+  else {
     device = '桌面';
   }
   
-  // 检测浏览器
+  // 检测浏览器 - 顺序很重要，因为某些UA包含多个浏览器标识
   let browser = '未知';
   if (ua.indexOf('micromessenger') > -1) {
     browser = '微信浏览器';
-  } else if (ua.indexOf('firefox') > -1) {
-    browser = 'Firefox';
+  } else if (ua.indexOf('ucbrowser') > -1 || ua.indexOf('ucweb') > -1) {
+    browser = 'UC浏览器';
+  } else if (ua.indexOf('qqbrowser') > -1) {
+    browser = 'QQ浏览器';
+  } else if (ua.indexOf('miuibrowser') > -1) {
+    browser = '小米浏览器';
+  } else if (ua.indexOf('huaweibrowser') > -1) {
+    browser = '华为浏览器';
+  } else if (ua.indexOf('baiduboxapp') > -1) {
+    browser = '百度App';
   } else if (ua.indexOf('edg') > -1 || ua.indexOf('edge') > -1) {
     browser = 'Edge';
+  } else if (ua.indexOf('firefox') > -1) {
+    browser = 'Firefox';
   } else if (ua.indexOf('opr') > -1 || ua.indexOf('opera') > -1) {
     browser = 'Opera';
   } else if (ua.indexOf('chrome') > -1) {
     browser = 'Chrome';
   } else if (ua.indexOf('safari') > -1) {
     browser = 'Safari';
-  } else if (ua.indexOf('ucbrowser') > -1) {
-    browser = 'UC浏览器';
-  } else if (ua.indexOf('qqbrowser') > -1) {
-    browser = 'QQ浏览器';
+  } else if (ua.indexOf('trident') > -1 || ua.indexOf('msie') > -1) {
+    browser = 'Internet Explorer';
   }
   
   // 检测操作系统
   let os = '未知';
-  if (ua.indexOf('windows') > -1) {
-    os = 'Windows';
-  } else if (ua.indexOf('mac os') > -1) {
-    os = 'macOS';
+  if (ua.indexOf('harmonyos') > -1) {
+    os = '鸿蒙OS';
   } else if (ua.indexOf('android') > -1) {
-    os = 'Android';
+    // 提取Android版本
+    const match = ua.match(/android\s([0-9.]+)/);
+    os = match ? `Android ${match[1]}` : 'Android';
   } else if (ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('ipod') > -1) {
-    os = 'iOS';
+    // 提取iOS版本
+    const match = ua.match(/os\s([0-9_]+)/);
+    const version = match ? match[1].replace(/_/g, '.') : '';
+    os = version ? `iOS ${version}` : 'iOS';
+  } else if (ua.indexOf('mac') > -1) {
+    os = 'macOS';
+  } else if (ua.indexOf('win') > -1) {
+    // 提取Windows版本
+    if (ua.indexOf('windows nt 10') > -1) {
+      os = 'Windows 10/11';
+    } else if (ua.indexOf('windows nt 6.3') > -1) {
+      os = 'Windows 8.1';
+    } else if (ua.indexOf('windows nt 6.2') > -1) {
+      os = 'Windows 8';
+    } else if (ua.indexOf('windows nt 6.1') > -1) {
+      os = 'Windows 7';
+    } else {
+      os = 'Windows';
+    }
   } else if (ua.indexOf('linux') > -1) {
     os = 'Linux';
-  } else if (ua.indexOf('harmony') > -1) {
-    os = '鸿蒙OS';
   }
   
   return { device, browser, os };
